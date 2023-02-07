@@ -1,0 +1,5 @@
+co 50 130 13
+Jarek 50 148 9
+cooooo 40 135 14
+sdsdds 40 146 8
+sadsad 40 138 19
