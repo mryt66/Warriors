@@ -95,7 +95,7 @@ def available_warriors(my_objects):
 def add(my_objects):
     name='{}'
     while True:
-        question1 = question("Would you like to make a new character")
+        question1 = input("Would you like to make a new character (y/n): ")
         if question1 == 'y':
             wc=warrior_creator()
             war_obj=wc.create()
@@ -191,4 +191,3 @@ def menu():
     else:
         menu()
 menu()
-
