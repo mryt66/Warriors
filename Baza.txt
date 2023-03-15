@@ -1,0 +1,5 @@
+co 50 130 13
+Jarek 50 148 9
+Alicja 40 135 14
+Dominik 40 146 8
+Arek 40 138 19
