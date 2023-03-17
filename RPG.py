@@ -1,79 +1,99 @@
 import random
 import re
-class warrior: #warrio_creator
-    def __init__(self,name,AD,health,agility):
-        self.name=name
-        self.AD = AD
-        self.health=health
-        self.agility = agility
-class warrior_creator:
-    def __init__(self):
-        pass
+from dataclasses import dataclass
+
+
+@dataclass
+class Warriors:
+    name: str
+    ad: int
+    health: int
+    agility: int
+
+
+class Warrior_creator:
     def create(self):
-        max_points=random.randint(85,100)
-        name_reg="/^[a-z_-]$/"
-        while True:
+        max_points = random.randint(85, 100)
+        check=False
+        name=""
+        ad=0
+        health_add=0
+        while check==False:
+            print("You have to enter text with 3 - 15 symbols")
             name = input("Choose a name for your warrior: ")
-            check = re.search(name_reg, name)
-            if check:
-                print("You entered wrong name (It must be text)")
-            else:
+            if re.match('^.{3,15}$', name):
                 break
-        print(" ")
-        print("Your will add points to every category except agility. Agility will be rest of you reamaining points")
-        print("Every addition to attack or health costs points",end=" \n")
-        print("Your points: ", max_points,"\n")
-        while True:
-            try:
-                AD = int(input("How much attack damage would you like to have? "))
-                if AD>=1 and AD<max_points:
-                    max_points-=AD
-                    break
-            except:
-                print("You have to enter a number beetween 1 -",max_points)
+        print("Your will add points to every category except agility. Agility will be rest of you reamaining points"'\n',
+            "Every addition to attack or health costs points")
+
+        #attack damage
+        print(f'Your points: {max_points}')
+        while ad == 0:
+            ad = input("How much points would you like to spend on attack damage? ")
+            ad = try_parse_int(ad)
+            if 1 <= ad <= max_points:
+                max_points -= ad
+                break
+            else:
+                print(f'You have to enter a number beetween 1 - {max_points}')
+                ad=0
+
+        # health
         health = random.randint(90, 110)
-        while True:
-            try:
-                print("Your points: ", max_points)
-                health_add = int(input("How much points would you like to spend on health? "))
-                if health_add >= 1 and health_add <= max_points:
-                    max_points -= health_add
-                    break
-            except:
-                print("You have to enter a number beetween 1 -", max_points)
+        print(f'Your points: {max_points}')
+        while health_add==0:
+            health_add = input("How much points would you like to spend on health? ")
+            health_add=try_parse_int(health_add)
+            if 1<=health_add<=max_points:
+                max_points -= health_add
+                break
+            else:
+                print(f'You have to enter a number beetween 1 - {max_points}')
+                health_add=0
         health+=health_add
+
+        #agility
         agility=max_points
-        print("Your warrior:")
-        stats="Name"
-        for j in range(len(name)-3):
-            stats+=" "
-        stats+="| AD | Health | Agility"
-        print(stats)
-        print(name,"|",AD,"|  ",health," |   ",agility)
-        return warrior(name,AD,health,agility)
+
+        print(f'Your warrior:{ad} {health} {agility}')
+        print(f"{'Name':15s}|{' AD ':3s}|{' Health ':3s}|{' Agility ':2s}")
+        print(f"{name:15s}| {ad:2} |{health:5}   |  {agility:3}")
+        return Warriors(name,ad,health,agility)
+
 
 filepath="Baza"
-my_objects={} #dictionary
+my_objects={} #słownik
 
-def question(text):
+
+def try_parse_int(text):
+    try:
+        return int(text)
+    except:
+        return None
+
+
+def question(text) -> int:
     try:
         would=int(input(text))
         return would
     except ValueError:
         print("You have to input a number")
 
+
 def add_tobase(filepath,my_objects): #dodaje 1 element
     file=open(filepath, 'w', encoding="utf8")
     for name in my_objects:
-        file.write(str(my_objects[name].name)+" "+str(my_objects[name].AD)+" "+str(my_objects[name].health)+" "+str(my_objects[name].agility)+"\n")
+        file.write(str(my_objects[name].name)+" "+str(my_objects[name].ad)+" "+str(my_objects[name].health)+" "+str(my_objects[name].agility)+"\n")
     file.close()
+
 
 def read_frombase(filepath,my_objects):
     file = open(filepath, 'r', encoding="utf8")
     for i in file:
         new_object = i.strip().split(" ")
         if new_object[0] not in my_objects:
-            my_objects[new_object[0]] = my_objects.get(new_object[0], warrior(new_object[0], new_object[1], new_object[2], new_object[3]))
+            my_objects[new_object[0]] = Warriors(new_object[0],int(new_object[1]), int(new_object[2]), int(new_object[3]))
+
 
 def delete_from_base(my_objects):
     while True:
@@ -86,77 +106,97 @@ def delete_from_base(my_objects):
         elif name == "None":
             break
 
+
 def available_warriors(my_objects):
-    print("Your available warriors: \n")
-    print("Name | AD | Health | Agility")
-    for j in my_objects:
-        print(my_objects[j].name,my_objects[j].AD,my_objects[j].health,my_objects[j].agility)
+    if len(my_objects)!=0:
+        print(f"Your available warriors: \n"
+              f"{'Name':15s}|{'AD ':4s}|{'Health':5s}|{'Agility':2s}")
+        for j in my_objects:
+            print(f"{my_objects[j].name:15s}|{my_objects[j].ad:3} |{my_objects[j].health:4}  |{my_objects[j].agility:2}")
+    else:
+        print("There are no warriors available")
+
 
 def add(my_objects):
-    name='{}'
     while True:
         question1 = input("Would you like to make a new character (y/n): ")
         if question1 == 'y':
-            wc=warrior_creator()
+            wc=Warrior_creator()
             war_obj=wc.create()
             my_objects[war_obj.name]=war_obj
             add_tobase(filepath, my_objects)
         else:
             break
 
+
 def choose_fighters(my_objects):
-    choose = input("Write a name of the first warrior\n")
-    warrior1=0
-    while True:
-        try:
-            if choose == my_objects[choose].name:
-                warrior1 = choose
+    if len(my_objects)>=2:
+        warrior1 = ""
+        print("If you are scared of fighting type None")
+        while True:
+            choose = input("Write a name of the first warrior\n")
+            if choose=="None":
                 break
-        except:
-            print("There is no warrior called like that in a list")
-            continue
-    choose2 = input("Write a name of second warrior\n")
-    while True:
-        try:
-            if choose2 == my_objects[choose2].name and choose2 != my_objects[choose].name:
-                warrior2=choose2
-                break
-        except:
-            print("There is no warrior called like that in a list")
-    return [warrior1,warrior2]
+            try:
+                if choose == my_objects[choose].name:
+                    warrior1 = choose
+                    break
+            except ValueError:
+                print("There is no warrior called like that in a list")
+                continue
+
+        while True:
+            choose2 = input("Write a name of second warrior\n")
+            try:
+                if choose2 == my_objects[choose2].name and choose2 != my_objects[choose].name:
+                    warrior2=choose2
+                    break
+            except ValueError:
+                print("There is no warrior called like that in a list")
+        return [warrior1,warrior2]
+    else:
+        print("There are no warriors available")
+        return [0,0]
+
 
 def fight(id_warrior1,id_warrior2,DMG1, DMG2, health1, health2):
-    print(id_warrior1," hit the ",id_warrior2," with ",DMG1)
-    health1-=DMG2
-    print(id_warrior2, " hit the ", id_warrior1," with ", DMG2)
-    health2-=DMG1
-    print(id_warrior1,health1)
-    print(id_warrior2,health2)
-    if health1<=0:
-        print(id_warrior2, "won the fight")
-        return [health1,health2,False]
-    elif health2<=0:
-        print(id_warrior1, "won the fight")
-        return [health1,health2,False]
+    if health1!=0:     #Fight comments
+        print(f'{id_warrior1} hit the {id_warrior2} with {DMG1}')
+        health1-=DMG2
+        print(f'{id_warrior2} hit the {id_warrior1} with {DMG2}')
+        health2-=DMG1
+        print(f'{id_warrior1},{health1},{id_warrior2}, {health2}\n')
+        if health1<=0:
+            print(f'{id_warrior2} won the fight')
+            return [health1,health2,False]
+        elif health2<=0:
+            print(f'{id_warrior1} won the fight')
+            return [health1,health2,False]
+        else:
+            return [health1,health2,True]
     else:
-        print(health1,health2)
-        return [health1,health2,True]
+        print("There are no warriors available")
+
 
 def fight_pattern(my_objects):
-    read_frombase(filepath, my_objects)
-    available_warriors(my_objects)
-    [id_warrior1,id_warrior2]=(choose_fighters(my_objects))
-    tmhp1=my_objects[id_warrior1].health
-    tmhp2 = my_objects[id_warrior2].health
-    DMG1 = int(my_objects[id_warrior1].AD)*int((1+int(my_objects[id_warrior1].agility)/100))
-    DMG2 = int(my_objects[id_warrior2].AD)*int((1+int(my_objects[id_warrior2].agility)/100))
-    my_objects[id_warrior1].health=int(my_objects[id_warrior1].health)
-    my_objects[id_warrior2].health=int(my_objects[id_warrior2].health)
-    end=True
-    while end==True:
-        [my_objects[id_warrior1].health,my_objects[id_warrior2].health,end]=fight(id_warrior1,id_warrior2,DMG1,DMG2,(my_objects[id_warrior1].health),(my_objects[id_warrior2].health))
-    my_objects[id_warrior1].health=tmhp1
-    my_objects[id_warrior2].health=tmhp2
+    if len(my_objects)>=2: #implementing data from my_objects dictionary
+        read_frombase(filepath, my_objects)
+        available_warriors(my_objects)
+        [id_warrior1,id_warrior2]=(choose_fighters(my_objects))
+        tmhp1 = my_objects[id_warrior1].health
+        tmhp2 = my_objects[id_warrior2].health
+        DMG1 = int(my_objects[id_warrior1].ad)*int((1+int(my_objects[id_warrior1].agility)/100))
+        DMG2 = int(my_objects[id_warrior2].ad)*int((1+int(my_objects[id_warrior2].agility)/100))
+        my_objects[id_warrior1].health=int(my_objects[id_warrior1].health)
+        my_objects[id_warrior2].health=int(my_objects[id_warrior2].health)
+        end=True
+        while end==True:
+            [my_objects[id_warrior1].health,my_objects[id_warrior2].health,end]=fight(id_warrior1,id_warrior2,DMG1,DMG2,(my_objects[id_warrior1].health),(my_objects[id_warrior2].health))
+        my_objects[id_warrior1].health=tmhp1
+        my_objects[id_warrior2].health=tmhp2
+    else:
+        print("There are no warriors available")
+
 
 def game_menu():
     print("What would you like to do?\n1. Add new warrior\n2. Delete warrior\n3. Show available warriors\n4. Fight with warrior\n5. Go back to menu")
@@ -176,13 +216,18 @@ def game_menu():
             exit(menu())
     game_menu()
 
+
 def menu():
-    print("-----------------Menu------------------- \n1. Informations about the game \n2. Play \n3. Exit")
+    print("-----------------Menu------------------- \n1. Informations about the game \n2. Play \n3. Exit\n")
     ans1=question("Choose one from menu: ")
     if ans1==1 or ans1==2 or ans1==3:
         if ans1 == 1:
             print(
-                "This is a RPG game about warriors \nYou can add warrior to your data base and fight with different one\nFight process works in the way that fighter gets minus health points which are equal to total damage of different fighter\nTotal damage=Attack damage multipled by (1+(agility/100))\nThe fight is over when one of the fighters is dead it means that his health is equal or lower than zero")
+                "This is a RPG game about warriors \n"
+                "You can add warrior to your data base and fight with different one\n"
+                "Fight process works in the way that fighter gets minus health points which are equal to total damage of different fighter\n"
+                "Total damage=Attack damage multipled by (1+(agility/100))\n"
+                "The fight is over when one of the fighters is dead it means that his health is equal or lower than zero\n")
             menu()
         elif ans1 == 2:
             game_menu()
