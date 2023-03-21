@@ -1,7 +1,7 @@
 from Warrior_creator import Warrior_creator
 
 filepath="Baza"
-my_objects={} #słownik
+my_objects={} #Dictionary
 
 
 def try_parse_int(text):
