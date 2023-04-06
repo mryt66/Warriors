@@ -20,7 +20,6 @@ def question(text) -> int:
         print("You have to input a number")
 
 
-
 def add_tobase(filepath,my_objects): #dodaje 1 element
     file=open(filepath, 'w', encoding="utf8")
     for name in my_objects:
