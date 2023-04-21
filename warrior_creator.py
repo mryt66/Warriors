@@ -1,6 +1,6 @@
 import random
 import re
-from Warriors import Warriors
+from warriors import Warriors
 
 class Warrior_creator:
     def create(self):
