@@ -1,5 +1,5 @@
-from Warrior_creator import Warrior_creator
-from Warriors import Warriors
+from warrior_creator import Warrior_creator
+from warriors import Warriors
 
 filepath="Baza"
 my_objects={} #słownik
